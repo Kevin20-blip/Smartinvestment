@@ -1,4 +1,5 @@
-{
+"bcrypt": "^5.1.0",
+"jsonwebtoken": "^9.0.0"{
   "name": "smartinvest",
   "version": "1.0.0",
   "main": "server.js",
