@@ -34,18 +34,4 @@
       });
 
       const data = await res.json();
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        loadUser();
-      } else {
-        document.getElementById("loginMsg").innerText = data.message;
-      }
-    }
-
-    async function loadUser() {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(API + "/me", {
-        headers: {
-          "Authorization
+    
