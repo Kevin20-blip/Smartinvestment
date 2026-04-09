@@ -1,5 +1,4 @@
-"bcrypt": "^5.1.0",
-"jsonwebtoken": "^9.0.0"{
+{
   "name": "smartinvest",
   "version": "1.0.0",
   "main": "server.js",
@@ -9,6 +8,8 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "bcrypt": "^5.1.0",
+    "jsonwebtoken": "^9.0.0"
   }
 }
