@@ -9,26 +9,50 @@
 <button onclick="login()">Login</button>
 
   <p id="result"></p>  <script>
-    console.log("Script loaded");
-
     async function login() {
-      console.log("Login clicked");
+      const result = document.getElementById("result");
 
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: document.getElementById("email").value,
-          password: document.getElementById("password").value
-        })
-      });
+      try {
+        // 🔐 Login request
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+          })
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      document.getElementById("result").innerText =
-        data.token ? "SUCCESS: " + data.token : "ERROR: " + data.message;
+        if (data.token) {
+          result.innerText = "✅ Logged in!\n";
+
+          // Save token
+          localStorage.setItem("token", data.token);
+
+          // 👇 Fetch profile
+          const profileRes = await fetch("/profile", {
+            headers: {
+              "Authorization": data.token
+            }
+          });
+
+          const profile = await profileRes.json();
+
+          // 👇 Display user info
+          result.innerText += "📧 Email: " + profile.email + "\n";
+          result.innerText += "💰 Balance: $" + profile.balance;
+
+        } else {
+          result.innerText = "❌ " + data.message;
+        }
+
+      } catch (err) {
+        result.innerText = "⚠️ Server error";
+      }
     }
   </script></body>
-</html>    
+</html>
