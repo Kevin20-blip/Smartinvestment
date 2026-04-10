@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 
-// ✅ Serve frontend
+// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
 const JWT_SECRET = "secret123";
@@ -38,7 +38,7 @@ const token = jwt.sign({ id: user.id }, JWT_SECRET);
 res.json({ token });
 });
 
-// PROFILE
+// PROFILE ✅ FULLY FIXED
 app.get("/profile", (req, res) => {
 const token = req.headers.authorization;
 
@@ -48,7 +48,10 @@ return res.status(401).json({ message: "No token" });
 
 try {
 const decoded = jwt.verify(token, JWT_SECRET);
+console.log("Decoded:", decoded);
+
 const user = users.find(u => u.id === decoded.id);
+console.log("User found:", user);
 
 if (!user) {
   return res.status(404).json({ message: "User not found" });
@@ -59,7 +62,8 @@ res.json({
   balance: user.balance
 });
 
-} catch {
+} catch (err) {
+console.log("JWT ERROR:", err);
 res.status(401).json({ message: "Invalid token" });
 }
 });
