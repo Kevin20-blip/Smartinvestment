@@ -61,12 +61,12 @@
 
     <div class="card">
       <h3>📊 Portfolio Value</h3>
-      <p>$10,000</p>
+      <p id="portfolio">$10,000</p>
     </div>
 
     <div class="card">
       <h3>📈 Profit</h3>
-      <p>+$1,250</p>
+      <p id="profit">+$1,250</p>
     </div>
 
     <button onclick="loadAPI()">Check Server</button>
@@ -79,7 +79,9 @@
       fetch('/api')
         .then(res => res.json())
         .then(data => {
-          document.getElementById('result').innerText = data.message;
+          document.getElementById('portfolio').innerText = "$" + data.portfolio;
+          document.getElementById('profit').innerText = "+$" + data.profit;
+          document.getElementById('result').innerText = "✅ Data updated from server!";
         });
     }
   </script>
