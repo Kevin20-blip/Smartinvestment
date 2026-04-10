@@ -1,0 +1,120 @@
+<!DOCTYPE html><html>
+<head>
+  <title>SmartInvest</title>  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+    }
+
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .dashboard {
+      padding: 20px;
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+  </style></head><body><!-- LOGIN --><div id="loginView" class="center">
+  <div class="card">
+    <h1>🚀 SmartInvest</h1><input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="result"></p>
+
+  </div>
+</div><!-- DASHBOARD --><div id="dashboardView" style="display:none" class="dashboard">  <div class="box">
+    <h3>👤 Email</h3>
+    <p id="userEmail"></p>
+  </div>  <div class="box">
+    <h3>💰 Balance</h3>
+    <p id="userBalance"></p>
+  </div><button onclick="logout()">Logout</button>
+
+</div><script>
+async function login() {
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    loadProfile();
+  } else {
+    result.innerText = "❌ " + data.message;
+  }
+}
+
+async function loadProfile() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("/profile", {
+    headers: { Authorization: token }
+  });
+
+  const data = await res.json();
+
+  loginView.style.display = "none";
+  dashboardView.style.display = "block";
+
+  userEmail.innerText = data.email;
+  userBalance.innerText = "$" + data.balance;
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  location.reload();
+}
+
+window.onload = () => {
+  if (localStorage.getItem("token")) {
+    loadProfile();
+  }
+};
+</script></body>
+</html>
