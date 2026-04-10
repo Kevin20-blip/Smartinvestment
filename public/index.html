@@ -8,14 +8,14 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
       text-align: center;
     }
 
     .container {
-      padding: 40px 20px;
+      padding: 40px;
     }
 
     input {
@@ -23,7 +23,6 @@
       margin: 5px;
       border-radius: 5px;
       border: none;
-      width: 120px;
     }
 
     .card {
@@ -52,38 +51,59 @@
 
 <body>
 
-  <div class="container">
-    <h1>💰 Smart Investment</h1>
-    <p>Enter your investment 👇</p>
+<div class="container">
+  <h1>💰 Smart Investment</h1>
 
-    <input id="amount" type="number" placeholder="Amount">
-    <input id="profitInput" type="number" placeholder="Profit">
-    <br><br>
-    <button onclick="updateData()">Update</button>
+  <input id="amount" type="number" placeholder="Amount">
+  <input id="profitInput" type="number" placeholder="Profit"><br><br>
 
-    <div class="card">
-      <h3>📊 Portfolio Value</h3>
-      <p id="portfolio">$0</p>
-    </div>
+  <button onclick="saveData()">Save</button>
 
-    <div class="card">
-      <h3>📈 Profit</h3>
-      <p id="profit">$0</p>
-    </div>
-
-    <p id="result"></p>
+  <div class="card">
+    <h3>📊 Portfolio Value</h3>
+    <p id="portfolio">$0</p>
   </div>
 
-  <script>
-    function updateData() {
-      const amount = document.getElementById("amount").value;
-      const profit = document.getElementById("profitInput").value;
+  <div class="card">
+    <h3>📈 Profit</h3>
+    <p id="profit">$0</p>
+  </div>
 
-      document.getElementById("portfolio").innerText = "$" + amount;
-      document.getElementById("profit").innerText = "+$" + profit;
-      document.getElementById("result").innerText = "✅ Updated locally!";
-    }
-  </script>
+  <p id="result"></p>
+</div>
+
+<script>
+  // Load saved data on page load
+  function loadData() {
+    fetch('/api')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('portfolio').innerText = "$" + data.portfolio;
+        document.getElementById('profit').innerText = "+$" + data.profit;
+      });
+  }
+
+  // Save data to server
+  function saveData() {
+    const portfolio = document.getElementById("amount").value;
+    const profit = document.getElementById("profitInput").value;
+
+    fetch('/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ portfolio, profit })
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerText = data.message;
+      loadData();
+    });
+  }
+
+  loadData();
+</script>
 
 </body>
 </html>
