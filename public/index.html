@@ -1,171 +1,44 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>SmartInvest</title>  <style>
+  <meta charset="UTF-8" />
+  <title>Smart Investment</title>
+  <style>
     body {
-      margin: 0;
       font-family: Arial;
+      text-align: center;
       background: #0f172a;
       color: white;
+      padding: 50px;
     }
-
-    .center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 10px;
-      width: 300px;
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: none;
-    }
-
     button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      background: #3b82f6;
-      color: white;
+      padding: 10px 20px;
+      background: #22c55e;
       border: none;
-      border-radius: 5px;
+      color: white;
       cursor: pointer;
+      font-size: 16px;
     }
+  </style>
+</head>
+<body>
 
-    .dashboard {
-      padding: 20px;
+  <h1>💰 Smart Investment App</h1>
+  <p>Welcome to your live app 🚀</p>
+
+  <button onclick="loadAPI()">Check API</button>
+
+  <p id="result"></p>
+
+  <script>
+    function loadAPI() {
+      fetch('/api')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('result').innerText = data.message;
+        });
     }
+  </script>
 
-    .box {
-      background: #1e293b;
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 10px;
-    }
-  </style></head><body><!-- LOGIN --><div id="loginView" class="center">
-  <div class="card">
-    <h1>🚀 SmartInvest</h1><input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-
-<p id="result"></p>
-
-  </div>
-</div><!-- DASHBOARD --><div id="dashboardView" style="display:none" class="dashboard">  <div class="box">
-    <h3>👤 Email</h3>
-    <p id="userEmail">Loading...</p>
-  </div>  <div class="box">
-    <h3>💰 Balance</h3>
-    <p id="userBalance">$0</p>
-  </div>  <!-- ✅ NEW: Deposit / Withdraw -->  <div class="box">
-    <input id="amount" placeholder="Enter amount"><button onclick="deposit()">➕ Deposit</button>
-<button onclick="withdraw()">➖ Withdraw</button>
-
-  </div><button onclick="logout()">Logout</button>
-
-</div><script>
-// LOGIN
-async function login() {
-  const res = await fetch("/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      email: document.getElementById("email").value,
-      password: document.getElementById("password").value
-    })
-  });
-
-  const data = await res.json();
-
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    loadProfile();
-  } else {
-    document.getElementById("result").innerText = "❌ " + data.message;
-  }
-}
-
-// LOAD PROFILE
-async function loadProfile() {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch("/profile", {
-    headers: { Authorization: token }
-  });
-
-  const data = await res.json();
-
-  document.getElementById("loginView").style.display = "none";
-  document.getElementById("dashboardView").style.display = "block";
-
-  document.getElementById("userEmail").innerText = data.email;
-  document.getElementById("userBalance").innerText = "$" + data.balance;
-}
-
-// ✅ DEPOSIT
-async function deposit() {
-  const amount = document.getElementById("amount").value;
-  const token = localStorage.getItem("token");
-
-  const res = await fetch("/deposit", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token
-    },
-    body: JSON.stringify({ amount })
-  });
-
-  const data = await res.json();
-
-  document.getElementById("userBalance").innerText = "$" + data.balance;
-}
-
-// ✅ WITHDRAW
-async function withdraw() {
-  const amount = document.getElementById("amount").value;
-  const token = localStorage.getItem("token");
-
-  const res = await fetch("/withdraw", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token
-    },
-    body: JSON.stringify({ amount })
-  });
-
-  const data = await res.json();
-
-  if (data.message) {
-    alert(data.message);
-  } else {
-    document.getElementById("userBalance").innerText = "$" + data.balance;
-  }
-}
-
-// LOGOUT
-function logout() {
-  localStorage.removeItem("token");
-  location.reload();
-}
-
-window.onload = () => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    loadProfile();
-  }
-};
-</script></body>
+</body>
 </html>
