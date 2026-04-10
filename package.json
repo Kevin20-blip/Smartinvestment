@@ -1,7 +1,7 @@
 {
-  "name": "my-app",
+  "name": "smartinvestment",
   "version": "1.0.0",
-  "description": "",
+  "description": "Smart Investment App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
