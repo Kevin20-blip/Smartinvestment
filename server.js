@@ -4,14 +4,14 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static frontend
+// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
-// API route
+// API with dynamic data
 app.get("/api", (req, res) => {
   res.json({
-    status: "success",
-    message: "Smart Investment API is working 🚀"
+    portfolio: 12500,
+    profit: 1800
   });
 });
 
