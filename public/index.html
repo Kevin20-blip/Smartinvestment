@@ -3,7 +3,7 @@
   <title>SmartInvest</title>  <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: #0f172a;
       color: white;
     }
@@ -63,10 +63,10 @@
   </div>
 </div><!-- DASHBOARD --><div id="dashboardView" style="display:none" class="dashboard">  <div class="box">
     <h3>👤 Email</h3>
-    <p id="userEmail"></p>
+    <p id="userEmail">Loading...</p>
   </div>  <div class="box">
     <h3>💰 Balance</h3>
-    <p id="userBalance"></p>
+    <p id="userBalance">$0</p>
   </div><button onclick="logout()">Logout</button>
 
 </div><script>
@@ -99,11 +99,14 @@ async function loadProfile() {
 
   const data = await res.json();
 
+  console.log("PROFILE:", data); // debug
+
   loginView.style.display = "none";
   dashboardView.style.display = "block";
 
-  userEmail.innerText = data.email;
-  userBalance.innerText = "$" + data.balance;
+  // ✅ FIXED (no more undefined)
+  userEmail.innerText = data.email || "N/A";
+  userBalance.innerText = "$" + (data.balance || 0);
 }
 
 function logout() {
@@ -112,7 +115,8 @@ function logout() {
 }
 
 window.onload = () => {
-  if (localStorage.getItem("token")) {
+  const token = localStorage.getItem("token");
+  if (token) {
     loadProfile();
   }
 };
