@@ -1,13 +1,15 @@
 {
-"name": "smartinvest",
-"version": "1.0.0",
-"description": "SmartInvest App",
-"main": "server.js",
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"express": "^4.18.2",
-"jsonwebtoken": "^9.0.0"
-}
+  "name": "my-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
