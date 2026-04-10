@@ -1,0 +1,207 @@
+<!DOCTYPE html><html>
+<head>
+  <title>SmartInvest</title>  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+    }
+
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .dashboard {
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+
+    .box {
+      background: rgba(30, 41, 59, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .actions button {
+      margin-top: 10px;
+    }
+
+    .tx {
+      font-size: 14px;
+      border-bottom: 1px solid #334155;
+      padding: 5px 0;
+    }
+
+  </style></head>
+<body>  <!-- LOGIN -->  <div id="loginView" class="center">
+    <div class="card">
+      <h1>🚀 SmartInvest</h1>
+      <h3>Login</h3>  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <p id="result"></p>
+</div>
+
+  </div>  <!-- DASHBOARD -->  <div id="dashboardView" style="display:none" class="dashboard"><h1>📊 Dashboard</h1>
+
+<div class="box">
+  <h3>👤 Profile</h3>
+  <p id="userEmail"></p>
+</div>
+
+<div class="box">
+  <h3>💰 Balance</h3>
+  <div id="userBalance" class="balance">$0</div>
+</div>
+
+<div class="box actions">
+  <h3>⚡ Actions</h3>
+  <button onclick="invest()">Invest +$100</button>
+  <button onclick="withdraw()">Withdraw -$50</button>
+</div>
+
+<div class="box">
+  <h3>📜 Transactions</h3>
+  <div id="txList"></div>
+</div>
+
+<button onclick="logout()">Logout</button>
+
+  </div>  <script>
+    let balance = 0;
+    let transactions = [];
+
+    async function login() {
+      const result = document.getElementById("result");
+
+      try {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          loadDashboard(data.token);
+        } else {
+          result.innerText = "❌ " + data.message;
+        }
+
+      } catch {
+        result.innerText = "⚠️ Server error";
+      }
+    }
+
+    async function loadDashboard(token) {
+      const res = await fetch("/profile", {
+        headers: { "Authorization": token }
+      });
+
+      const profile = await res.json();
+
+      balance = profile.balance;
+
+      document.getElementById("loginView").style.display = "none";
+      document.getElementById("dashboardView").style.display = "block";
+
+      document.getElementById("userEmail").innerText = profile.email;
+
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById("userBalance").innerText = "$" + balance;
+
+      const txList = document.getElementById("txList");
+      txList.innerHTML = "";
+
+      transactions.slice().reverse().forEach(tx => {
+        const div = document.createElement("div");
+        div.className = "tx";
+        div.innerText = tx;
+        txList.appendChild(div);
+      });
+    }
+
+    function invest() {
+      balance += 100;
+      transactions.push("💸 Invested $100");
+      updateUI();
+    }
+
+    function withdraw() {
+      if (balance >= 50) {
+        balance -= 50;
+        transactions.push("🏧 Withdrew $50");
+        updateUI();
+      } else {
+        alert("Not enough balance");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      location.reload();
+    }
+
+    window.onload = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        loadDashboard(token);
+      }
+    };
+  </script></body>
+</html>
