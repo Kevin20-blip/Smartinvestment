@@ -1,62 +1,95 @@
 <!DOCTYPE html><html>
 <head>
-  <title>SmartInvest</title>
-  <style>
+  <title>SmartInvest</title>  <style>
     body {
       margin: 0;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+    }
+
+    .center {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
       color: white;
-    }.card {
-  background: rgba(30, 41, 59, 0.95);
-  padding: 30px;
-  border-radius: 12px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0,0,0,0.6);
-}
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: none;
-}
+    button:hover {
+      background: #2563eb;
+    }
 
-button {
-  width: 100%;
-  padding: 10px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    .dashboard {
+      padding: 20px;
+    }
 
-button:hover {
-  background: #2563eb;
-}
+    .box {
+      background: rgba(30, 41, 59, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
 
-#result {
-  margin-top: 15px;
-  white-space: pre-line;
-}
+    .balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
 
-  </style>
-</head><body>
-  <div class="card">
-    <h1>🚀 SmartInvest</h1>
-    <h3>Login</h3><input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
+  </style></head>
+<body>  <!-- LOGIN -->  <div id="loginView" class="center">
+    <div class="card">
+      <h1>🚀 SmartInvest</h1>
+      <h3>Login</h3>  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
 
-<button onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
 
-<p id="result"></p>
+  <p id="result"></p>
+</div>
+
+  </div>  <!-- DASHBOARD -->  <div id="dashboardView" style="display:none" class="dashboard"><h1>📊 Dashboard</h1>
+
+<div class="box">
+  <h3>👤 Profile</h3>
+  <p id="userEmail"></p>
+</div>
+
+<div class="box">
+  <h3>💰 Balance</h3>
+  <div id="userBalance" class="balance">$0</div>
+</div>
+
+<button onclick="logout()">Logout</button>
 
   </div>  <script>
     async function login() {
@@ -65,9 +98,7 @@ button:hover {
       try {
         const res = await fetch("/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: document.getElementById("email").value,
             password: document.getElementById("password").value
@@ -77,21 +108,8 @@ button:hover {
         const data = await res.json();
 
         if (data.token) {
-          result.innerText = "✅ Logged in!\n";
-
           localStorage.setItem("token", data.token);
-
-          const profileRes = await fetch("/profile", {
-            headers: {
-              "Authorization": data.token
-            }
-          });
-
-          const profile = await profileRes.json();
-
-          result.innerText += "📧 " + profile.email + "\n";
-          result.innerText += "💰 $" + profile.balance;
-
+          loadDashboard(data.token);
         } else {
           result.innerText = "❌ " + data.message;
         }
@@ -100,5 +118,34 @@ button:hover {
         result.innerText = "⚠️ Server error";
       }
     }
+
+    async function loadDashboard(token) {
+      const res = await fetch("/profile", {
+        headers: { "Authorization": token }
+      });
+
+      const profile = await res.json();
+
+      // switch views
+      document.getElementById("loginView").style.display = "none";
+      document.getElementById("dashboardView").style.display = "block";
+
+      // set data
+      document.getElementById("userEmail").innerText = profile.email;
+      document.getElementById("userBalance").innerText = "$" + profile.balance;
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      location.reload();
+    }
+
+    // auto login if token exists
+    window.onload = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        loadDashboard(token);
+      }
+    };
   </script></body>
 </html>
